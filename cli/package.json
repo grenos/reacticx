@@ -1,12 +1,12 @@
 {
   "name": "rn-glow",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "✨ Add UI components to your project with style",
   "main": "dist/index.js",
   "repository": {
     "url": "https://github.com/rit3zh/glow-ui/tree/main/cli"
   },
-  "homepage": "https://glow-ui.vercel.app/",
+  "homepage": "https://glow-ui.xyz/",
   "bin": {
     "rn-glow": "./dist/index.js"
   },

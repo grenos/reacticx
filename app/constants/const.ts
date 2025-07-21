@@ -188,4 +188,11 @@ export const COMPONENTS: IScreenComponents[] = [
     experimental: false,
     path: "components/whats-new",
   },
-];
+  {
+    title: "Calendar View",
+    icon: "calendar",
+    path: "components/calendar-view",
+  },
+].sort(
+  (a, b) => a.title.localeCompare(b.title) || a.icon.localeCompare(b.icon),
+) as IScreenComponents[];

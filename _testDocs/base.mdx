@@ -1,0 +1,1861 @@
+---
+title: Base
+description: Base component for React Native.
+---
+
+### 📦 Installation
+
+
+```bash
+npx rn-glow add base
+```
+
+### ⚙️ Types
+#### ActionCard.types.ts
+
+```ts
+import * as React from "react";
+import type { StyleProp, TextStyle, ViewStyle } from "react-native";
+
+export interface ActionCardTypes {
+  children: React.ReactNode;
+  className?: string;
+  style?: StyleProp<ViewStyle>;
+}
+
+export interface ActionCardWrapperTypes {
+  children: React.ReactNode;
+  className?: string;
+  style?: StyleProp<ViewStyle>;
+}
+
+export interface ActionCardTitleTypes {
+  children: React.ReactNode;
+  className?: string;
+  style?: StyleProp<TextStyle>;
+}
+export interface ActionCardSubtitleTypes {
+  children: React.ReactNode;
+  className?: string;
+  style?: StyleProp<TextStyle>;
+}
+```
+
+#### Avatar.types.ts
+
+```ts
+interface AvatarItem {
+  uri: string;
+  name?: string;
+}
+
+export interface AvatarGroupProps {
+  // Core props
+  image: AvatarItem;
+  size?: number;
+  onPress?(id: string): void;
+
+  // Styling props
+  showBorder?: boolean;
+  borderColor?: string;
+  borderWidth?: number;
+  backgroundColor?: string;
+  textColor?: string;
+
+  // State props
+  disabled?: boolean;
+  loading?: boolean;
+
+  // Display control props
+  showAvatar?: boolean;
+  showText?: boolean;
+  textPosition?: "top" | "bottom" | "right";
+  textStyle?: object;
+
+  // Loading & shimmer props
+  shimmerSpeed?: number;
+
+  // Interaction props
+  pressedScale?: number;
+  pressedOpacity?: number;
+
+  // Online indicator props
+  showOnlineIndicator?: boolean;
+  onlineIndicatorColor?: string;
+  onlineIndicatorSize?: number;
+}
+```
+
+#### ExpandableButton.types.ts
+
+```ts
+import { Feather } from "@expo/vector-icons";
+import { TextStyle, ViewStyle } from "react-native";
+
+export interface ExpandableButtonProps {
+  /** Text to display on the button */
+  title: string;
+  /** Whether the button is in a loading state */
+  isLoading: boolean;
+  /** Function to call when button is pressed */
+  onPress: () => void;
+  /** Width of the button in its expanded state */
+  width?: number;
+  /** Height of the button */
+  height?: number;
+  /** Background color of the button (ignored if gradient is provided) */
+  backgroundColor?: string;
+  /** Text color */
+  textColor?: string;
+  /** Font size of the button text */
+  fontSize?: number;
+  /** Optional icon to display before text */
+  icon?: keyof typeof Feather.glyphMap;
+  /** Icon size */
+  iconSize?: number;
+  /** Icon color (defaults to text color) */
+  iconColor?: string;
+  /** Button border radius (automatically calculated by default) */
+  borderRadius?: number;
+  /** Gradient colors to use (if provided) */
+  gradientColors?: string[];
+  /** Button style */
+  style?: ViewStyle;
+  /** Text style override */
+  textStyle?: TextStyle;
+  /** Whether to add a press animation effect */
+  withPressAnimation?: boolean;
+  /** Custom loading component */
+  loadingComponent?: React.ReactNode;
+  /** Loading indicator color */
+  loadingIndicatorColor?: string;
+  /** Animation configuration */
+  animationConfig?: {
+    damping?: number;
+    stiffness?: number;
+    duration?: number;
+  };
+  /** Whether to disable the button */
+  disabled?: boolean;
+}
+```
+
+#### Ripple.types.ts
+
+```ts
+import type { StyleProp, ViewStyle } from "react-native";
+
+export type TouchableRippleProps = {
+  children: React.ReactElement;
+  onPress?: () => void;
+  onLongPress?: () => void;
+  rippleColor?: string;
+  duration?: number;
+  borderRadius?: number;
+  style?: StyleProp<ViewStyle>;
+};
+```
+
+#### AnimatedSwitch.types.ts
+
+```ts
+import type { ImageSourcePropType, ImageStyle, ViewStyle } from "react-native";
+
+export interface AnimatedSwitchProps {
+  value: boolean;
+  onValueChange: (value: boolean) => void;
+  disabled?: boolean;
+  width?: number;
+  height?: number;
+  onColor?: string;
+  offColor?: string;
+  thumbColor?: string;
+  thumbSize?: number;
+  thumbInset?: number;
+  springConfig?: {
+    damping?: number;
+    stiffness?: number;
+    mass?: number;
+  };
+  style?: ViewStyle;
+  testID?: string;
+  // Icon properties
+  thumbOnIcon?: React.ReactNode;
+  thumbOffIcon?: React.ReactNode;
+  trackOnIcon?: React.ReactNode;
+  trackOffIcon?: React.ReactNode;
+  // Background properties
+  backgroundImage?: ImageSourcePropType;
+  backgroundImageStyle?: ImageStyle;
+  // Animation properties
+  animateIcons?: boolean;
+  iconAnimationType?: "fade" | "rotate" | "scale" | "bounce";
+}
+```
+
+#### Title.types.ts
+
+```ts
+import type { StyleProp, TextStyle } from "react-native";
+
+export interface TitleProps {
+  children: React.ReactNode;
+  size?: number;
+  style?: StyleProp<TextStyle>;
+  className?: string;
+}
+```
+
+#### Touchable.types.ts
+
+```ts
+import type { ReactNode } from "react";
+import type { StyleProp, ViewStyle } from "react-native";
+
+export interface TouchableProps {
+  children: ReactNode;
+  onPress?: () => void;
+  disabled?: boolean;
+  scaleTo?: number;
+  style?: StyleProp<ViewStyle>;
+}
+```
+
+### 💻 Components
+#### ActionCard.tsx
+
+```tsx
+import * as React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import type { ActionCardTypes } from "./ActionCard.types";
+
+export const ActionCard: React.FunctionComponent<ActionCardTypes> &
+  React.FC<ActionCardTypes> = ({
+  children,
+  className,
+  style,
+}): React.ReactNode & React.JSX.Element => {
+  return (
+    <View className={className} style={[styles.container, style]}>
+      {children}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#262626",
+    borderRadius: 10,
+    padding: 25,
+    marginBottom: 20,
+    marginTop: 15,
+  },
+});
+```
+
+#### Avatar.tsx
+
+```tsx
+import React, { useState, useEffect } from "react";
+import { View, Image, Text, Pressable, StyleSheet } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  interpolate,
+  Easing,
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from "react-native-reanimated";
+import type { AvatarGroupProps } from "./Avatar.types";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+export const Avatar: React.FC<AvatarGroupProps> = ({
+  image,
+  size = 40,
+  onPress,
+  showBorder = true,
+  borderColor = "#fff",
+  borderWidth = 2,
+  backgroundColor,
+  textColor = "#fff",
+  disabled = false,
+  loading = false,
+  showAvatar = true,
+  showText = false,
+  textPosition = "bottom",
+  textStyle,
+  shimmerSpeed = 1500,
+  pressedScale = 0.95,
+  pressedOpacity = 0.8,
+  showOnlineIndicator = false,
+  onlineIndicatorColor = "#4CAF50",
+  onlineIndicatorSize,
+}) => {
+  const [hasError, setHasError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const shimmerProgress = useSharedValue(0);
+  const pressScale = useSharedValue(1);
+  const pressOpacity = useSharedValue(1);
+  const fadeOpacity = useSharedValue(loading ? 0 : 1);
+
+  useEffect(() => {
+    if (loading) {
+      shimmerProgress.value = withRepeat(
+        withTiming(1, {
+          duration: shimmerSpeed,
+          easing: Easing.linear,
+        }),
+        -1,
+        false,
+      );
+      fadeOpacity.value = 0;
+    } else {
+      shimmerProgress.value = 0;
+      fadeOpacity.value = withTiming(1, {
+        duration: 400,
+        easing: Easing.out(Easing.quad),
+      });
+    }
+  }, [loading, shimmerSpeed]);
+
+  const getInitials = (name?: string): string => {
+    if (!name) return "?";
+
+    const words = name.trim().split(/\s+/);
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+
+    return (
+      words[0].charAt(0) + words[words.length - 1].charAt(0)
+    ).toUpperCase();
+  };
+
+  const getBackgroundColor = (): string => {
+    if (backgroundColor) return backgroundColor;
+
+    if (image.name) {
+      const colors = [
+        "#FF6B6B",
+        "#4ECDC4",
+        "#45B7D1",
+        "#96CEB4",
+        "#FFEAA7",
+        "#DDA0DD",
+        "#98D8C8",
+        "#F7DC6F",
+        "#BB8FCE",
+        "#85C1E9",
+        "#FF8A80",
+        "#82B1FF",
+        "#B39DDB",
+        "#A5D6A7",
+        "#FFCC02",
+      ];
+
+      let hash = 0;
+      for (let i = 0; i < image.name.length; i++) {
+        hash = image.name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+
+      return colors[Math.abs(hash) % colors.length];
+    }
+
+    return "#ccc";
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    setHasError(false);
+  };
+
+  const handleImageError = () => {
+    setHasError(true);
+    setImageLoaded(false);
+  };
+
+  const handlePressIn = () => {
+    if (!disabled && !loading) {
+      pressScale.value = withTiming(pressedScale, { duration: 100 });
+      pressOpacity.value = withTiming(pressedOpacity, { duration: 100 });
+    }
+  };
+
+  const handlePressOut = () => {
+    if (!disabled && !loading) {
+      pressScale.value = withTiming(1, { duration: 100 });
+      pressOpacity.value = withTiming(1, { duration: 100 });
+    }
+  };
+
+  const handlePress = () => {
+    if (!disabled && !loading && onPress) {
+      onPress(image.name || image.uri);
+    }
+  };
+
+  const shouldShowImage = image.uri && !loading && showAvatar;
+  const avatarSize = { width: size, height: size, borderRadius: size / 2 };
+  const fontSize = size <= 32 ? size * 0.4 : size * 0.35;
+  const indicatorSize = onlineIndicatorSize || size * 0.25;
+
+  const shimmerAnimatedStyle = useAnimatedStyle(() => {
+    const translateX = interpolate(
+      shimmerProgress.value,
+      [0, 1],
+      [-size * 1.5, size * 1.5],
+    );
+    const opacity = interpolate(
+      shimmerProgress.value,
+      [0, 0.5, 1],
+      [0.3, 0.8, 0.3],
+    );
+
+    return {
+      transform: [{ translateX }],
+      opacity,
+    };
+  });
+
+  const pressAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pressScale.value }],
+    opacity: pressOpacity.value,
+  }));
+
+  const fadeAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: fadeOpacity.value,
+  }));
+
+  const ShimmerEffect = () => (
+    <View style={[styles.shimmerContainer, avatarSize]}>
+      <Animated.View
+        style={[
+          styles.shimmerOverlay,
+          shimmerAnimatedStyle,
+          {
+            width: size * 0.6,
+            height: size,
+            left: -size * 0.3,
+          },
+        ]}
+      />
+    </View>
+  );
+
+  const AvatarContent = () => {
+    if (loading) {
+      return (
+        <Animated.View layout={LinearTransition.springify()}>
+          <View
+            style={[
+              styles.loadingContainer,
+              avatarSize,
+              { backgroundColor: getBackgroundColor() },
+            ]}
+          >
+            <Text
+              style={[
+                styles.fallbackText,
+                {
+                  fontSize,
+                  color: textColor,
+                  opacity: 0.6,
+                },
+              ]}
+              numberOfLines={1}
+            >
+              {getInitials(image.name)}
+            </Text>
+            <ShimmerEffect />
+          </View>
+        </Animated.View>
+      );
+    }
+
+    if (shouldShowImage) {
+      return (
+        <Animated.View style={[styles.imageContainer, fadeAnimatedStyle]}>
+          <Image
+            source={{ uri: image.uri }}
+            style={[
+              styles.avatar,
+              avatarSize,
+              showBorder && {
+                borderWidth,
+                borderColor,
+              },
+            ]}
+            onLoad={() => {
+              console.log("Image loaded!");
+              handleImageLoad();
+            }}
+            onError={(e) => {
+              console.error("Image failed to load:", e.nativeEvent);
+              handleImageError();
+            }}
+          />
+          {showOnlineIndicator && (
+            <Animated.View
+              style={[
+                styles.onlineIndicator,
+                {
+                  width: indicatorSize,
+                  height: indicatorSize,
+                  borderRadius: indicatorSize / 2,
+                  backgroundColor: onlineIndicatorColor,
+                  right: size * 0.05,
+                  bottom: size * 0.05,
+                },
+              ]}
+            />
+          )}
+        </Animated.View>
+      );
+    }
+
+    return (
+      <Animated.View style={[styles.fallbackContainer, fadeAnimatedStyle]}>
+        <View
+          style={[
+            styles.fallback,
+            avatarSize,
+            { backgroundColor: getBackgroundColor() },
+            showBorder && {
+              borderWidth,
+              borderColor,
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.fallbackText,
+              {
+                fontSize,
+                color: textColor,
+              },
+            ]}
+            numberOfLines={1}
+          >
+            {getInitials(image.name)}
+          </Text>
+        </View>
+        {showOnlineIndicator && (
+          <View
+            style={[
+              styles.onlineIndicator,
+              {
+                width: indicatorSize,
+                height: indicatorSize,
+                borderRadius: indicatorSize / 2,
+                backgroundColor: onlineIndicatorColor,
+                right: size * 0.05,
+                bottom: size * 0.05,
+              },
+            ]}
+          />
+        )}
+      </Animated.View>
+    );
+  };
+
+  const TextContent = () => {
+    if (!showText || !image.name) return null;
+
+    return (
+      <Text
+        style={[
+          styles.nameText,
+          textPosition === "right" && styles.nameTextRight,
+          textPosition === "top" && styles.nameTextTop,
+          { fontSize: size * 0.3 },
+          textStyle,
+        ]}
+        numberOfLines={1}
+      >
+        {image.name}
+      </Text>
+    );
+  };
+
+  return (
+    <View
+      style={[
+        styles.container,
+        textPosition === "right" && styles.containerRow,
+        textPosition === "top" && styles.containerColumn,
+      ]}
+    >
+      {textPosition === "top" && <TextContent />}
+
+      <AnimatedPressable
+        onPress={handlePress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled || loading}
+        style={[
+          styles.pressable,
+          pressAnimatedStyle,
+          disabled && styles.disabled,
+        ]}
+      >
+        <AvatarContent />
+      </AnimatedPressable>
+
+      {textPosition === "right" && <TextContent />}
+      {textPosition === "bottom" && <TextContent />}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+  },
+  containerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  containerColumn: {
+    flexDirection: "column",
+  },
+  pressable: {
+    borderRadius: 50,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  imageContainer: {
+    position: "relative",
+  },
+  avatar: {
+    backgroundColor: "#f0f0f0",
+  },
+  fallbackContainer: {
+    position: "relative",
+  },
+  fallback: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fallbackText: {
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  loadingContainer: {
+    position: "relative",
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  shimmerContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: "hidden",
+  },
+  shimmerOverlay: {
+    position: "absolute",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 4,
+    transform: [{ rotate: "20deg" }],
+  },
+  onlineIndicator: {
+    position: "absolute",
+    borderWidth: 2,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 2,
+  },
+  nameText: {
+    color: "#333",
+    fontWeight: "500",
+    textAlign: "center",
+    marginVertical: 4,
+  },
+  nameTextRight: {
+    marginLeft: 8,
+    marginVertical: 0,
+  },
+  nameTextTop: {
+    marginBottom: 6,
+    marginVertical: 0,
+  },
+});
+```
+
+#### AvatarGroup.tsx
+
+```tsx
+import React from "react";
+import { View, Image, Text, Pressable, StyleSheet } from "react-native";
+
+export interface AvatarItem {
+  id: string;
+  uri?: string;
+  name?: string;
+}
+
+interface AvatarGroupProps {
+  avatars: AvatarItem[];
+  size?: number;
+  max?: number;
+  overlap?: number;
+  onPress?(id: string): void;
+}
+
+export const AvatarGroup: React.FC<AvatarGroupProps> = ({
+  avatars,
+  size = 40,
+  max = 5,
+  overlap = 10,
+  onPress,
+}) => {
+  const displayed = avatars.slice(0, max);
+  const extraCount = avatars.length - max;
+
+  return (
+    <View style={styles.container}>
+      {displayed.map((avatar, idx) => (
+        <Pressable
+          key={avatar.id}
+          onPress={() => onPress?.(avatar.id)}
+          style={{ marginLeft: idx === 0 ? 0 : -overlap }}
+        >
+          {avatar.uri ? (
+            <Image
+              source={{ uri: avatar.uri }}
+              style={[
+                styles.avatar,
+                { width: size, height: size, borderRadius: size / 2 },
+              ]}
+            />
+          ) : (
+            <View
+              style={[
+                styles.fallback,
+                { width: size, height: size, borderRadius: size / 2 },
+              ]}
+            >
+              <Text style={[styles.fallbackText, { fontSize: size / 2 }]}>
+                {avatar.name?.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
+        </Pressable>
+      ))}
+
+      {extraCount > 0 && (
+        <View
+          style={[
+            styles.extra,
+            {
+              width: size,
+              height: size,
+              borderRadius: size / 2,
+              marginLeft: -overlap,
+            },
+          ]}
+        >
+          <Text style={[styles.extraText, { fontSize: size / 2 }]}>
+            +{extraCount}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  avatar: {
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  fallback: {
+    backgroundColor: "#ccc",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  fallbackText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  extra: {
+    backgroundColor: "#888",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  extraText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+});
+```
+
+#### Badge.tsx
+
+```tsx
+/**
+ * ╔════════════════════════════════════════════════════════╗
+ * ║                                                        ║
+ * ║   ✦ Badge Component  ✦                                ║
+ * ║                                                        ║
+ * ╠════════════════════════════════════════════════════════╣
+ * ║  Author      : Ritesh “rit3zh”                        ║
+ * ║  Created On  : April 27, 2025                          ║
+ * ║  A versatile badge for status indicators,              ║
+ * ║  notifications, and contextual labels in your UI       ║
+ * ╚════════════════════════════════════════════════════════╝
+ */
+
+import React from "react";
+import { View, Text, StyleSheet, ViewStyle, TextStyle } from "react-native";
+import * as constants from "@/constants/components/index";
+
+export type BadgeVariant =
+  | "default"
+  | "success"
+  | "warning"
+  | "error"
+  | "notifications"
+  | "pending";
+import type { BorderRadiusKey } from "@/constants/components/index";
+
+export interface BadgeProps {
+  label: string;
+  variant?: BadgeVariant;
+  size?: "sm" | "md" | "lg";
+  radius?: BorderRadiusKey;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+  icon?: React.ReactNode;
+}
+
+const variantStyles: Record<
+  BadgeVariant,
+  {
+    backgroundColor: string;
+    textColor: string;
+    borderColor?: string;
+    borderWidth?: number;
+  }
+> = {
+  default: { backgroundColor: "#c6e8c5", textColor: "#374151" },
+  success: { backgroundColor: "#D1FAE5", textColor: "#065F46" },
+  warning: { backgroundColor: "#FEF3C7", textColor: "#92400E" },
+  error: { backgroundColor: "#FEE2E2", textColor: "#991B1B" },
+  pending: {
+    backgroundColor: "#edeef8",
+    textColor: "#312db8",
+  },
+  notifications: {
+    backgroundColor: "transparent",
+    textColor: "#dbdbdb",
+    borderColor: "#e6e6e6",
+    borderWidth: 0.3,
+  },
+};
+
+const sizeStyles: Record<
+  "sm" | "md" | "lg",
+  { paddingVertical: number; paddingHorizontal: number; fontSize: number }
+> = {
+  sm: { paddingVertical: 4, paddingHorizontal: 8, fontSize: 10 },
+  md: { paddingVertical: 7, paddingHorizontal: 15, fontSize: 16 },
+  lg: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 25 },
+};
+
+export const Badge: React.FC<BadgeProps> = ({
+  label,
+  variant = "default",
+  size = "md",
+  style,
+  textStyle,
+  icon,
+  radius = "md",
+}) => {
+  const vs = variantStyles[variant];
+  const ss = sizeStyles[size];
+  const rs = constants.borderRadiusStyles[radius];
+
+  return (
+    <View
+      style={[
+        styles.badge,
+        {
+          backgroundColor: vs.backgroundColor,
+          paddingVertical: ss.paddingVertical,
+          paddingHorizontal: ss.paddingHorizontal,
+          borderRadius: rs.borderRadius,
+          borderColor: vs.borderColor,
+          borderWidth: vs.borderWidth,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        style,
+      ]}
+    >
+      {icon}
+      {label ? (
+        <Text
+          style={[
+            styles.text,
+            { color: vs.textColor, fontSize: ss.fontSize },
+            textStyle,
+          ]}
+        >
+          {label}
+        </Text>
+      ) : null}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  badge: {},
+  text: {
+    fontWeight: "500",
+    marginLeft: 5,
+  },
+});
+```
+
+#### ExpandableButton.tsx
+
+```tsx
+import React, { useEffect } from "react";
+import { Feather } from "@expo/vector-icons";
+import {
+  Pressable,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  ViewStyle,
+  Platform,
+} from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+import type { ExpandableButtonProps } from "./ExpandableButton.types";
+import { LinearGradient } from "expo-linear-gradient";
+
+export const ExpandableButton: React.FC<ExpandableButtonProps> = ({
+  title,
+  isLoading,
+  onPress,
+  width = 200,
+  height = 48,
+  backgroundColor = "#3B82F6",
+  textColor = "white",
+  fontSize = 16,
+  icon,
+  iconSize = 18,
+  iconColor,
+  borderRadius,
+  gradientColors,
+  style,
+  textStyle,
+  withPressAnimation = true,
+  loadingComponent,
+  loadingIndicatorColor = "white",
+  animationConfig = {
+    damping: 15,
+    stiffness: 150,
+    duration: 300,
+  },
+  disabled = false,
+}): React.JSX.Element => {
+  const animatedWidth = useSharedValue<number>(width);
+  const animatedScale = useSharedValue<number>(1);
+  const animatedOpacity = useSharedValue<number>(1);
+
+  useEffect(() => {
+    animatedWidth.value = withSpring<number>(isLoading ? height : width, {
+      damping: animationConfig.damping,
+      stiffness: animationConfig.stiffness,
+    });
+  }, [isLoading, width, height, animatedWidth, animationConfig]);
+
+  const calculatedBorderRadius = borderRadius ?? height / 2;
+
+  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
+    width: animatedWidth.value,
+    borderRadius: withTiming(isLoading ? height / 2 : calculatedBorderRadius, {
+      duration: animationConfig.duration,
+    }),
+    transform: [{ scale: animatedScale.value }],
+    opacity: animatedOpacity.value,
+  }));
+
+  const handlePressIn = () => {
+    if (withPressAnimation && !disabled && !isLoading) {
+      animatedScale.value = withTiming(0.95, { duration: 100 });
+    }
+  };
+
+  const handlePressOut = () => {
+    if (withPressAnimation && !disabled && !isLoading) {
+      animatedScale.value = withTiming(1, { duration: 200 });
+    }
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        loadingComponent || (
+          <ActivityIndicator color={loadingIndicatorColor} size="small" />
+        )
+      );
+    }
+
+    return (
+      <>
+        {icon && (
+          <Feather
+            name={icon}
+            size={iconSize}
+            color={iconColor || textColor}
+            style={{ marginRight: 8 }}
+          />
+        )}
+        <Text
+          style={[styles.text, { color: textColor, fontSize }, textStyle]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {title}
+        </Text>
+      </>
+    );
+  };
+
+  const wrappedButton = gradientColors ? (
+    <Animated.View style={[animatedStyle]}>
+      <LinearGradient
+        colors={gradientColors as [string, string, ...string[]]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={[
+          styles.gradientContainer,
+          {
+            height,
+            width: "100%",
+            borderRadius: isLoading ? height / 2 : calculatedBorderRadius,
+          },
+          style,
+        ]}
+      >
+        {renderContent()}
+      </LinearGradient>
+    </Animated.View>
+  ) : (
+    <Animated.View
+      style={[
+        styles.button,
+        {
+          height,
+          backgroundColor: backgroundColor,
+        },
+        animatedStyle,
+        style,
+      ]}
+    >
+      {renderContent()}
+    </Animated.View>
+  );
+
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={isLoading || disabled}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={({ pressed }) => [
+        styles.pressable,
+        Platform.OS === "ios" && pressed && styles.pressed,
+      ]}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: isLoading || disabled }}
+    >
+      {wrappedButton}
+    </Pressable>
+  );
+};
+
+const styles = StyleSheet.create({
+  pressable: {
+    alignSelf: "flex-start",
+  },
+  pressed: {
+    opacity: 0.9,
+  },
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    overflow: "hidden",
+  },
+  gradientContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    overflow: "hidden",
+    height: "100%",
+    width: "100%",
+  },
+  text: {
+    fontWeight: "600",
+  },
+});
+```
+
+#### PrivacyNoticeLink.tsx
+
+```tsx
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
+import React from "react";
+import type { IPrivacyNoticeLinkProps } from "./PrivacyNoticeLink.type";
+
+const DEFAULT_TINT = "#007AFF";
+const DEFAULT_SIZE = 14;
+
+export const PrivacyNoticeLink: React.FC<IPrivacyNoticeLinkProps> &
+  React.FunctionComponent<IPrivacyNoticeLinkProps> = ({
+  children,
+  ...props
+}: IPrivacyNoticeLinkProps): React.ReactNode => {
+  return (
+    <View style={[styles.container, props.style]}>
+      <TouchableOpacity onPress={props.onPress}>
+        <Text
+          style={[
+            styles.text,
+            {
+              color: props.tint ?? DEFAULT_TINT,
+              fontSize: props.size ?? DEFAULT_SIZE,
+            },
+          ]}
+        >
+          {children}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {},
+  text: {
+    color: "#007AFF",
+    fontSize: 14,
+  },
+});
+```
+
+#### Ripple.tsx
+
+```tsx
+import React, { useState, cloneElement, isValidElement } from "react";
+import { View, LayoutChangeEvent } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  runOnJS,
+} from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import type { TouchableRippleProps } from "./Ripple.types";
+
+export const TouchableRipple: React.FC<TouchableRippleProps> = ({
+  children,
+  onPress,
+  onLongPress,
+  rippleColor = "rgba(0,0,0,0.2)",
+  duration = 400,
+  borderRadius = 0,
+  style = {},
+}) => {
+  const [layout, setLayout] = useState({ width: 0, height: 0 });
+
+  const scale = useSharedValue(0);
+  const opacity = useSharedValue(0);
+  const rippleX = useSharedValue(0);
+  const rippleY = useSharedValue(0);
+  const isLongPressing = useSharedValue(false);
+
+  const onLayout = (event: LayoutChangeEvent) => {
+    const { width, height } = event.nativeEvent.layout;
+    setLayout({ width, height });
+  };
+
+  const gesture = Gesture.Tap()
+    .onStart((e) => {
+      // Detect the press position
+      rippleX.value = e.x;
+      rippleY.value = e.y;
+      scale.value = 0;
+      opacity.value = 1;
+
+      // Start the ripple animation from the press point
+      scale.value = withTiming(1, { duration });
+      opacity.value = withTiming(0, { duration });
+    })
+    .onEnd(() => {
+      if (onPress) runOnJS(onPress)();
+    });
+
+  // Long press gesture logic
+  const longPressGesture = Gesture.LongPress()
+    .onStart(() => {
+      isLongPressing.value = true;
+      // Maintain ripple starting position and scale up for long press
+      scale.value = withTiming(1.5, { duration }); // Increase size during long press
+      opacity.value = withTiming(0.3, { duration }); // Adjust opacity
+
+      if (onLongPress) runOnJS(onLongPress)();
+    })
+    .onEnd(() => {
+      isLongPressing.value = false;
+      // Restore the animation when the press is released
+      scale.value = withTiming(0, { duration });
+      opacity.value = withTiming(0, { duration });
+    });
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const size = Math.max(layout.width, layout.height) * 2;
+    return {
+      position: "absolute",
+      width: size,
+      height: size,
+      top: rippleY.value - size / 2,
+      left: rippleX.value - size / 2,
+      backgroundColor: rippleColor,
+      borderRadius: size / 2,
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
+    };
+  });
+
+  if (!isValidElement(children)) {
+    console.error(
+      "TouchableRipple expects a single valid React element as child.",
+    );
+    return null;
+  }
+
+  return (
+    <GestureDetector gesture={Gesture.Race(gesture, longPressGesture)}>
+      <View onLayout={onLayout}>
+        <View
+          style={
+            [
+              {
+                overflow: "hidden",
+                borderRadius,
+              },
+              style,
+            ] as any
+          }
+        >
+          {cloneElement(children, {
+            ...(children.props as any),
+          })}
+
+          <Animated.View pointerEvents="none" style={animatedStyle} />
+        </View>
+      </View>
+    </GestureDetector>
+  );
+};
+```
+
+#### Subtitle.tsx
+
+```tsx
+// make subtitle component
+import React from "react";
+import { Text, StyleSheet } from "react-native";
+import type { SubtitleProps } from "./Subtitle.props";
+
+export const Subtitle: React.FC<SubtitleProps> = ({
+  children,
+  size = 13.5,
+  style,
+  className,
+}): React.ReactNode => {
+  return (
+    <Text
+      className={className}
+      style={[
+        styles.text,
+        {
+          maxWidth: "90%",
+          fontSize: size ? size : 13.5,
+        },
+        style,
+      ]}
+      numberOfLines={2}
+    >
+      {children}
+    </Text>
+  );
+};
+const styles = StyleSheet.create({
+  text: {
+    fontWeight: "medium",
+    color: "#a8a8a8",
+    top: 3.5,
+  },
+});
+```
+
+#### AnimatedSwitch.tsx
+
+```tsx
+import React, { useEffect } from "react";
+import { StyleSheet, Pressable } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolateColor,
+  useDerivedValue,
+  withTiming,
+  withSequence,
+} from "react-native-reanimated";
+import { AnimatedSwitchProps } from "./AnimatedSwitch.types";
+
+export const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({
+  value,
+  onValueChange,
+  disabled = false,
+  width = 56,
+  height = 32,
+  onColor = "#4CD964",
+  offColor = "#E9E9EA",
+  thumbColor = "#FFFFFF",
+  thumbSize,
+  thumbInset = 2,
+  springConfig = {
+    damping: 15,
+    stiffness: 120,
+    mass: 1,
+  },
+  style,
+  testID,
+
+  thumbOnIcon,
+  thumbOffIcon,
+  trackOnIcon,
+  trackOffIcon,
+
+  backgroundImage,
+  backgroundImageStyle,
+
+  animateIcons = true,
+
+  iconAnimationType = "fade",
+}) => {
+  const finalThumbSize = thumbSize ?? height - thumbInset * 2;
+  const moveDistance = width - finalThumbSize - thumbInset * 2;
+
+  const position = useSharedValue(value ? 1 : 0);
+  const iconOpacity = useSharedValue(value ? 1 : 0);
+  const iconRotation = useSharedValue(value ? 1 : 0);
+  const iconScale = useSharedValue(value ? 1 : 0);
+  const iconBounce = useSharedValue(value ? 1 : 0);
+
+  useEffect(() => {
+    position.value = value ? 1 : 0;
+
+    if (animateIcons) {
+      if (iconAnimationType === "fade") {
+        iconOpacity.value = withTiming(value ? 1 : 0, { duration: 200 });
+      } else if (iconAnimationType === "rotate") {
+        iconRotation.value = withTiming(value ? 1 : 0, { duration: 300 });
+      } else if (iconAnimationType === "scale") {
+        iconScale.value = withTiming(value ? 1 : 0, { duration: 200 });
+      } else if (iconAnimationType === "bounce") {
+        iconBounce.value = withSequence(
+          withTiming(1.2, { duration: 100 }),
+          withTiming(1, { duration: 100 }),
+        );
+      }
+    }
+  }, [
+    value,
+    position,
+    iconOpacity,
+    iconRotation,
+    iconScale,
+    iconBounce,
+    animateIcons,
+    iconAnimationType,
+  ]);
+
+  const backgroundColor = useDerivedValue(() => {
+    return interpolateColor(position.value, [0, 1], [offColor, onColor]);
+  });
+
+  const thumbStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: withSpring(position.value * moveDistance, springConfig),
+        },
+      ],
+    };
+  });
+
+  const backgroundStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: backgroundColor.value,
+    };
+  });
+
+  const thumbIconStyle = useAnimatedStyle(() => {
+    switch (iconAnimationType) {
+      case "fade":
+        return {
+          opacity: iconOpacity.value,
+        };
+      case "rotate":
+        return {
+          transform: [{ rotate: `${iconRotation.value * 180}deg` }],
+        };
+      case "scale":
+        return {
+          transform: [{ scale: iconScale.value * 0.6 + 0.4 }],
+        };
+      case "bounce":
+        return {
+          transform: [{ scale: iconBounce.value }],
+        };
+      default:
+        return {};
+    }
+  });
+
+  const handlePress = () => {
+    if (disabled) return;
+
+    const newValue = !value;
+    onValueChange(newValue);
+  };
+
+  const trackIconStyle = useAnimatedStyle(() => {
+    switch (iconAnimationType) {
+      case "fade":
+        return {
+          opacity: value ? iconOpacity.value : 1 - iconOpacity.value,
+        };
+      case "scale":
+        return {
+          transform: [
+            {
+              scale: value
+                ? iconScale.value * 0.5 + 0.5
+                : (1 - iconScale.value) * 0.5 + 0.5,
+            },
+          ],
+        };
+      case "rotate":
+        return {
+          transform: [
+            {
+              rotate: value
+                ? `${iconRotation.value * 90}deg`
+                : `${(1 - iconRotation.value) * 90}deg`,
+            },
+          ],
+        };
+      case "bounce":
+        return {
+          transform: [{ scale: iconBounce.value }],
+        };
+      default:
+        return {};
+    }
+  });
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      disabled={disabled}
+      testID={testID}
+      style={({ pressed }) => [
+        { opacity: pressed || disabled ? 0.7 : 1 },
+        style,
+      ]}
+    >
+      <Animated.View
+        style={[
+          styles.track,
+          backgroundStyle,
+          {
+            width,
+            height,
+            borderRadius: height / 2,
+            overflow: "hidden",
+          },
+        ]}
+      >
+        {backgroundImage && (
+          <Animated.Image
+            source={backgroundImage}
+            style={[styles.backgroundImage, backgroundImageStyle]}
+            resizeMode="cover"
+          />
+        )}
+
+        {value && trackOnIcon && (
+          <Animated.View
+            style={[
+              styles.trackIconContainer,
+              { justifyContent: "flex-start", alignItems: "flex-start" },
+              trackIconStyle,
+            ]}
+          >
+            {trackOnIcon}
+          </Animated.View>
+        )}
+
+        {!value && trackOffIcon && (
+          <Animated.View
+            style={[
+              styles.trackIconContainer,
+              { justifyContent: "flex-end", alignItems: "flex-end" },
+              trackIconStyle,
+            ]}
+          >
+            {trackOffIcon}
+          </Animated.View>
+        )}
+
+        <Animated.View
+          style={[
+            styles.thumb,
+            thumbStyle,
+            {
+              width: finalThumbSize,
+              height: finalThumbSize,
+              borderRadius: finalThumbSize / 2,
+              backgroundColor: thumbColor,
+              left: thumbInset,
+              top: thumbInset,
+            },
+          ]}
+        >
+          {value && thumbOnIcon && (
+            <Animated.View style={[styles.thumbIconContainer, thumbIconStyle]}>
+              {thumbOnIcon}
+            </Animated.View>
+          )}
+
+          {!value && thumbOffIcon && (
+            <Animated.View style={[styles.thumbIconContainer, thumbIconStyle]}>
+              {thumbOffIcon}
+            </Animated.View>
+          )}
+        </Animated.View>
+      </Animated.View>
+    </Pressable>
+  );
+};
+
+const styles = StyleSheet.create({
+  track: {
+    justifyContent: "center",
+  },
+  thumb: {
+    position: "absolute",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 2,
+  },
+  backgroundImage: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
+  trackIconContainer: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    padding: 8,
+    zIndex: 1,
+  },
+  thumbIconContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
+});
+
+export default AnimatedSwitch;
+```
+
+#### Title.tsx
+
+```tsx
+import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import type { TitleProps } from "./Title.types";
+
+export const Title: React.FC<TitleProps> = ({
+  children,
+  size = 18,
+  style,
+  className,
+}): React.ReactNode => {
+  return (
+    <View>
+      <Text
+        className={className}
+        style={[
+          styles.text,
+          style,
+          {
+            fontSize: size ? size : 18,
+          },
+        ]}
+      >
+        {children}
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  text: {
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
+});
+```
+
+#### Touchable.tsx
+
+```tsx
+// Touchable.tsx
+
+import * as React from "react";
+import { Pressable } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { TouchableProps } from "./Touchable.types";
+
+export const Touchable: React.FC<TouchableProps> &
+  React.FunctionComponent<TouchableProps> = ({
+  children,
+  onPress,
+  disabled = false,
+  scaleTo = 0.95,
+  style,
+}: TouchableProps) => {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    if (!disabled) {
+      scale.value = withTiming(scaleTo, { duration: 100 });
+    }
+  };
+
+  const handlePressOut = () => {
+    if (!disabled) {
+      scale.value = withTiming(1, { duration: 100 });
+    }
+  };
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      disabled={disabled}
+      style={{ flexShrink: 1 }}
+    >
+      <Animated.View style={[animatedStyle, style]}>{children}</Animated.View>
+    </Pressable>
+  );
+};
+```
+
+### 🧩 Children
+#### ActionCardSubtitle.tsx
+
+```tsx
+import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import type { ActionCardSubtitleTypes } from "../ActionCard.types";
+
+export const ActionCardSubtitle: React.FC<ActionCardSubtitleTypes> &
+  React.FunctionComponent<ActionCardSubtitleTypes> = ({
+  children,
+  className,
+  style,
+}): React.ReactNode => {
+  return (
+    <View className="mt-1">
+      <Text
+        className={`${className} text-[#737373] text-[12.9px] text-center`}
+        style={style}
+      >
+        {children}
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({});
+```
+
+#### ActionCardTitle.tsx
+
+```tsx
+import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { ActionCardTitleTypes } from "../ActionCard.types";
+
+export const ActionCardTitle: React.FC<ActionCardTitleTypes> &
+  React.FunctionComponent<ActionCardTitleTypes> = ({
+  children,
+  className,
+  style,
+}): React.ReactNode => {
+  return (
+    <View className="mt-3">
+      <Text
+        className={`${className} text-white font-bold text-xl`}
+        style={style}
+      >
+        {children}
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({});
+```
+
+#### ActionCardWrapper.tsx
+
+```tsx
+import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import type { ActionCardSubtitleTypes } from "../ActionCard.types";
+
+export const ActionCardWrapper: React.FC<ActionCardSubtitleTypes> &
+  React.FunctionComponent<ActionCardSubtitleTypes> = ({
+  children,
+  className,
+  style,
+}): React.ReactNode => {
+  return (
+    <View className={className} style={[styles.container, style]}>
+      {children}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 5,
+    marginBottom: 13.5,
+  },
+});
+```
+
+### 📁 Other
+#### index.ts
+
+```ts
+export * from "./button/ExpandableButton";
+export * from "./avatar-group/AvatarGroup";
+export * from "./badge/Badge";
+export * from "./action-card/ActionCard";
+export * from "./action-card/children/ActionCardSubtitle";
+export * from "./action-card/children/ActionCardTitle";
+export * from "./action-card/children/ActionCardWrapper";
+export * from "./touchable/Touchable";
+export * from "./ripple/Ripple";
+export * from "./avatar/Avatar";
+export * from "./title/Title";
+export * from "./subtitle/Subtitle";
+export * from "./privacy-notice-text/PrivacyNoticeLink";
+
+export * from "./touchable/Touchable";
+```
+
+#### PrivacyNoticeLink.type.ts
+
+```ts
+import * as React from "react";
+import type { StyleProp, ViewStyle } from "react-native";
+
+export interface IPrivacyNoticeLinkProps {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+
+  onPress?: () => void;
+  size?: number | 14;
+  tint?: string;
+}
+```
+
+#### Subtitle.props.ts
+
+```ts
+import type { StyleProp, TextStyle } from "react-native";
+
+export interface SubtitleProps {
+  children: React.ReactNode;
+  size?: number;
+  style?: StyleProp<TextStyle>;
+  className?: string;
+}
+```

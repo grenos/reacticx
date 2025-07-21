@@ -3,21 +3,17 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   Dimensions,
   Animated,
   TouchableOpacity,
   Image,
   ScrollView,
-  Pressable,
 } from "react-native";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { sheetSizes } from "./constants/sizes/sheetSizes";
 import { BlurView } from "expo-blur";
 import { useVideoPlayer } from "expo-video";
 import { Ionicons } from "@expo/vector-icons";
-import { SeekBar } from "modules/seekbarnative";
-import { SymbolView } from "expo-symbols";
 import {
   onHandleSizeChange,
   onHandleDragEnd,
@@ -28,10 +24,9 @@ import { getValueFromIndex } from "./utils/helpers/getValueFromIndex";
 import { dismiss } from "./utils/animation-utils/reference/dismiss";
 import { present } from "./utils/animation-utils/reference/present";
 import { IFloatingPlayerProps } from "./types/FloatingPlayer.types";
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 const AnimatedBlur = Animated.createAnimatedComponent(BlurView);
-
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 

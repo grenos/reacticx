@@ -1,0 +1,1671 @@
+---
+title: Organisms
+description: Organisms component for React Native.
+---
+
+### 📦 Installation
+
+
+```bash
+npx rn-glow add organisms
+```
+
+### ⚙️ Types
+#### CheckBox.types.ts
+
+```ts
+import type { StyleProp, TextStyle, ViewStyle } from "react-native";
+
+export interface AnimatedCheckboxProps {
+  /** Whether the checkbox is checked */
+  checked: boolean;
+  /** Function called when checkbox is pressed */
+  onPress: (checked: boolean) => void;
+  /** Size of the checkbox (width and height) */
+  size?: number;
+  /** Border radius of the checkbox */
+  borderRadius?: number;
+  /** Color when checkbox is checked */
+  activeColor?: string;
+  /** Color when checkbox is unchecked */
+  inactiveColor?: string;
+  /** Border color when checkbox is unchecked */
+  borderColor?: string;
+  /** Border width */
+  borderWidth?: number;
+  /** Check mark color */
+  checkMarkColor?: string;
+  /** Animation duration in milliseconds */
+  animationDuration?: number;
+  /** Label to display next to checkbox */
+  label?: string;
+  /** Position of the label relative to checkbox */
+  labelPosition?: "left" | "right";
+  /** Additional styling for the container */
+  containerStyle?: StyleProp<ViewStyle>;
+  /** Additional styling for the checkbox */
+  checkboxStyle?: StyleProp<ViewStyle>;
+  /** Style for the label text */
+  labelStyle?: StyleProp<TextStyle>;
+  /** Whether checkbox is disabled */
+  disabled?: boolean;
+  /** Whether to use bounce animation */
+  bounceEffect?: boolean;
+  /** Whether to use ripple effect when pressing */
+  rippleEffect?: boolean;
+}
+```
+
+#### Dialog.types.ts
+
+```ts
+import { ReactNode } from "react";
+import { StyleProp, TextStyle } from "react-native";
+
+export type DialogContextType = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+};
+
+export type DialogComponent = {
+  ({ children }: { children: ReactNode }): JSX.Element;
+  Trigger: React.FC<DialogTriggerProps>;
+  Content: React.FC<DialogContentProps>;
+  Title: React.FC<DialogTitleProps>;
+  Description: React.FC<DialogDescriptionProps>;
+  Close: React.FC<DialogCloseProps>;
+};
+
+export type DialogContentProps = {
+  children: ReactNode;
+};
+export type DialogTitleProps = {
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+};
+export type DialogDescriptionProps = {
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+};
+export type DialogCloseProps = {
+  children: ReactNode;
+};
+export type DialogTriggerProps = {
+  children: ReactNode;
+};
+```
+
+#### AnimatedProgress.types.ts
+
+```ts
+import type { TextStyle, ViewStyle } from "react-native";
+
+export interface AnimatedProgressBarProps {
+  /**
+   * Progress value between 0 and 1
+   * @default 0
+   */
+  progress: number;
+
+  /**
+   * Duration of the animation in milliseconds
+   * @default 800
+   */
+  animationDuration?: number;
+
+  /**
+   * Width of the progress bar container
+   * @default '100%'
+   */
+  width?: number | string;
+
+  /**
+   * Height of the progress bar
+   * @default 10
+   */
+  height?: number;
+
+  /**
+   * Color of the progress indicator
+   * @default '#2089dc'
+   */
+  progressColor?: string;
+
+  /**
+   * Color of the background track
+   * @default '#e0e0e0'
+   */
+  trackColor?: string;
+
+  /**
+   * Border radius of the progress bar
+   * @default 4
+   */
+  borderRadius?: number;
+
+  /**
+   * Whether to show the progress percentage
+   * @default false
+   */
+  showPercentage?: boolean;
+
+  /**
+   * Position of the percentage text
+   * @default 'right'
+   */
+  percentagePosition?: "left" | "right" | "top" | "bottom" | "inside";
+
+  /**
+   * Style for the percentage text
+   */
+  percentageTextStyle?: TextStyle;
+
+  /**
+   * Style for the container
+   */
+  containerStyle?: ViewStyle;
+
+  /**
+   * Format function for the percentage display
+   * @default (value: number) => `${Math.round(value * 100)}%`
+   */
+  formatPercentage?: (value: number) => string;
+
+  /**
+   * Whether to use indeterminate animation style for unknown progress
+   * @default false
+   */
+  indeterminate?: boolean;
+
+  /**
+   * Whether to show the pulse animation effect
+   * @default false
+   */
+  pulsate?: boolean;
+
+  /**
+   * Whether to use a gradient for the progress bar
+   * @default false
+   */
+  useGradient?: boolean;
+
+  /**
+   * Colors for gradient (requires useGradient to be true)
+   * @default ['#4dabf7', '#3b5bdb']
+   */
+  gradientColors?: string[];
+
+  /**
+   * Optional callback when animation completes
+   */
+  onAnimationComplete?: () => void;
+}
+```
+
+#### SegmentedControl.types.ts
+
+```ts
+export type SegmentedControlItemProps = {
+  value: string;
+  children: React.ReactNode;
+  className?: string;
+};
+
+export type SegmentedControlRootProps = {
+  defaultValue?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  children: React.ReactNode;
+  theme?: "dark" | "light";
+  className?: string;
+};
+```
+
+### 💻 Components
+#### CheckBox.tsx
+
+```tsx
+import React, { useEffect } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+  StyleProp,
+  View,
+  Text,
+  TextStyle,
+} from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolateColor,
+  Easing,
+  withSequence,
+  withSpring,
+  interpolate,
+  Extrapolate,
+  Extrapolation,
+} from "react-native-reanimated";
+import { Path, Svg } from "react-native-svg";
+
+interface AnimatedCheckboxProps {
+  /** Whether the checkbox is checked */
+  checked: boolean;
+  /** Function called when checkbox is pressed */
+  onPress: (checked: boolean) => void;
+  /** Size of the checkbox (width and height) */
+  size?: number;
+  /** Border radius of the checkbox */
+  borderRadius?: number;
+  /** Color when checkbox is checked */
+  activeColor?: string;
+  /** Color when checkbox is unchecked */
+  inactiveColor?: string;
+  /** Border color when checkbox is unchecked */
+  borderColor?: string;
+  /** Border width */
+  borderWidth?: number;
+  /** Check mark color */
+  checkMarkColor?: string;
+  /** Animation duration in milliseconds */
+  animationDuration?: number;
+  /** Label to display next to checkbox */
+  label?: string;
+  /** Position of the label relative to checkbox */
+  labelPosition?: "left" | "right";
+  /** Additional styling for the container */
+  containerStyle?: StyleProp<ViewStyle>;
+  /** Additional styling for the checkbox */
+  checkboxStyle?: StyleProp<ViewStyle>;
+  /** Style for the label text */
+  labelStyle?: StyleProp<TextStyle>;
+  /** Whether checkbox is disabled */
+  disabled?: boolean;
+  /** Whether to use bounce animation */
+  bounceEffect?: boolean;
+  /** Whether to use ripple effect when pressing */
+  rippleEffect?: boolean;
+}
+
+export const AnimatedCheckbox: React.FC<AnimatedCheckboxProps> = ({
+  checked,
+  onPress,
+  size = 24,
+  borderRadius,
+  activeColor = "#2196F3",
+  inactiveColor = "transparent",
+  borderColor = "#757575",
+  borderWidth = 2,
+  checkMarkColor = "white",
+  animationDuration = 300,
+  label,
+  labelPosition = "right",
+  containerStyle,
+  checkboxStyle,
+  labelStyle,
+  disabled = false,
+  bounceEffect = true,
+  rippleEffect = true,
+}) => {
+  const progress = useSharedValue(checked ? 1 : 0);
+  const scale = useSharedValue(1);
+  const rippleOpacity = useSharedValue(0);
+  const rippleScale = useSharedValue(0);
+
+  useEffect(() => {
+    progress.value = withTiming(checked ? 1 : 0, {
+      duration: animationDuration,
+      easing: Easing.bezier(0.16, 1, 0.3, 1),
+    });
+
+    if (checked && bounceEffect) {
+      scale.value = withSequence(
+        withTiming(0.8, { duration: animationDuration / 2 }),
+        withSpring(1, {
+          mass: 1,
+          stiffness: 500,
+          damping: 15,
+        }),
+      );
+    }
+  }, [checked, animationDuration, progress, scale, bounceEffect]);
+
+  const handlePress = () => {
+    if (disabled) return;
+
+    onPress(!checked);
+
+    if (rippleEffect) {
+      rippleOpacity.value = withSequence(
+        withTiming(0.3, { duration: 100 }),
+        withTiming(0, { duration: 300 }),
+      );
+
+      rippleScale.value = withSequence(
+        withTiming(0, { duration: 0 }),
+        withTiming(1, { duration: 400 }),
+      );
+    }
+  };
+
+  const animatedBoxStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        [inactiveColor, activeColor],
+      ),
+      borderColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        [borderColor, activeColor],
+      ),
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  const animatedCheckStyle = useAnimatedStyle(() => {
+    return {
+      opacity: progress.value,
+      transform: [
+        {
+          scale: interpolate(
+            progress.value,
+            [0, 0.5, 1],
+            [0, 1.2, 1],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    };
+  });
+
+  const animatedRippleStyle = useAnimatedStyle(() => {
+    return {
+      opacity: rippleOpacity.value,
+      transform: [{ scale: rippleScale.value }],
+    };
+  });
+
+  const actualBorderRadius =
+    borderRadius !== undefined ? borderRadius : size / 4;
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      activeOpacity={0.8}
+      disabled={disabled}
+      style={[
+        styles.container,
+        labelPosition === "left" ? styles.rowReverse : styles.row,
+        { opacity: disabled ? 0.6 : 1 },
+        containerStyle,
+      ]}
+    >
+      <View style={{ position: "relative" }}>
+        <Animated.View
+          style={[
+            styles.checkbox,
+            {
+              width: size,
+              height: size,
+              borderRadius: actualBorderRadius,
+              borderWidth,
+            },
+            animatedBoxStyle,
+            checkboxStyle,
+          ]}
+        />
+
+        {rippleEffect && (
+          <Animated.View
+            style={[
+              styles.ripple,
+              {
+                width: size * 2.5,
+                height: size * 2.5,
+                borderRadius: size * 2.5,
+                top: -size * 0.75,
+                left: -size * 0.75,
+              },
+              animatedRippleStyle,
+            ]}
+          />
+        )}
+
+        <Animated.View
+          style={[
+            styles.checkMarkContainer,
+            {
+              width: size,
+              height: size,
+            },
+            animatedCheckStyle,
+          ]}
+        >
+          <Svg width={size * 0.6} height={size * 0.4} viewBox="0 0 18 13">
+            <Path
+              d="M1 5.5L6 11L17 1"
+              stroke={checkMarkColor}
+              strokeWidth={2.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </Svg>
+        </Animated.View>
+      </View>
+
+      {label && (
+        <Text
+          style={[
+            styles.label,
+            {
+              marginLeft: labelPosition === "right" ? 10 : 0,
+              marginRight: labelPosition === "left" ? 10 : 0,
+            },
+            labelStyle,
+          ]}
+        >
+          {label}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  row: {
+    flexDirection: "row",
+  },
+  rowReverse: {
+    flexDirection: "row-reverse",
+  },
+  checkbox: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderStyle: "solid",
+  },
+  ripple: {
+    position: "absolute",
+    backgroundColor: "#000",
+    zIndex: -1,
+  },
+  checkMarkContainer: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label: {
+    fontSize: 16,
+  },
+});
+```
+
+#### Dialog.tsx
+
+```tsx
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Pressable,
+  Animated,
+  Dimensions,
+  StyleProp,
+  TextStyle,
+} from "react-native";
+
+// Types
+interface DialogContextType {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+
+interface DialogProps {
+  children: ReactNode;
+}
+
+interface DialogTriggerProps {
+  children: ReactNode;
+  asChild?: boolean;
+}
+
+interface DialogContentProps {
+  children: ReactNode;
+  className?: string;
+}
+
+interface DialogHeaderProps {
+  children: ReactNode;
+}
+
+interface DialogTitleProps {
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+}
+
+interface DialogDescriptionProps {
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+}
+
+interface DialogFooterProps {
+  children: ReactNode;
+}
+
+interface DialogCloseProps {
+  children: ReactNode;
+  asChild?: boolean;
+}
+
+// Context
+const DialogContext = createContext<DialogContextType | undefined>(undefined);
+
+const useDialog = () => {
+  const context = useContext(DialogContext);
+  if (!context) {
+    throw new Error("Dialog components must be used within a Dialog");
+  }
+  return context;
+};
+
+// Styles
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  content: {
+    backgroundColor: "#09090b",
+    borderRadius: 12,
+    padding: 24,
+    width: "100%",
+    maxWidth: 400,
+    borderWidth: 1,
+    borderColor: "#27272a",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  header: {
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#fafafa",
+    marginBottom: 4,
+    lineHeight: 24,
+  },
+  description: {
+    fontSize: 14,
+    color: "#a1a1aa",
+    lineHeight: 20,
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 8,
+    marginTop: 24,
+  },
+  button: {},
+  primaryButton: {
+    backgroundColor: "#fafafa",
+    borderColor: "#fafafa",
+  },
+  secondaryButton: {
+    backgroundColor: "transparent",
+    // borderColor: "#27272a",
+  },
+  primaryButtonText: {
+    color: "#09090b",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  secondaryButtonText: {
+    color: "#fafafa",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+});
+
+// Components
+export const Dialog: React.FC<DialogProps> = ({ children }) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <DialogContext.Provider value={{ open, setOpen }}>
+      {children}
+    </DialogContext.Provider>
+  );
+};
+
+export const DialogTrigger: React.FC<DialogTriggerProps> = ({
+  children,
+  asChild,
+}) => {
+  const { setOpen } = useDialog();
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onPress: () => setOpen(true),
+    } as any);
+  }
+
+  return (
+    <TouchableOpacity onPress={() => setOpen(true)}>
+      {children}
+    </TouchableOpacity>
+  );
+};
+
+export const DialogContent: React.FC<DialogContentProps> = ({ children }) => {
+  const { open, setOpen } = useDialog();
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [scaleAnim] = useState(new Animated.Value(0.9));
+  const [translateYAnim] = useState(new Animated.Value(50));
+  const [overlayFadeAnim] = useState(new Animated.Value(0));
+
+  React.useEffect(() => {
+    if (open) {
+      // Opening animation - fade in up
+      Animated.parallel([
+        Animated.timing(overlayFadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          tension: 65,
+          friction: 7,
+          useNativeDriver: true,
+        }),
+        Animated.spring(translateYAnim, {
+          toValue: 0,
+          tension: 65,
+          friction: 7,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      // Closing animation - fade out down
+      Animated.parallel([
+        Animated.timing(overlayFadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 0.9,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateYAnim, {
+          toValue: 30,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [open]);
+
+  return (
+    <Modal
+      visible={open}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setOpen(false)}
+    >
+      <Animated.View style={[styles.overlay, { opacity: overlayFadeAnim }]}>
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={() => setOpen(false)}
+        />
+        <Animated.View
+          style={[
+            styles.content,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }, { translateY: translateYAnim }],
+            },
+          ]}
+        >
+          <Pressable>{children}</Pressable>
+        </Animated.View>
+      </Animated.View>
+    </Modal>
+  );
+};
+
+export const DialogHeader: React.FC<DialogHeaderProps> = ({ children }) => {
+  return <View style={styles.header}>{children}</View>;
+};
+
+export const DialogTitle: React.FC<DialogTitleProps> = ({
+  children,
+  style,
+}) => {
+  return <Text style={[styles.title, style]}>{children}</Text>;
+};
+
+export const DialogDescription: React.FC<DialogDescriptionProps> = ({
+  children,
+  style,
+}) => {
+  return <Text style={[styles.description, style]}>{children}</Text>;
+};
+
+export const DialogFooter: React.FC<DialogFooterProps> = ({ children }) => {
+  return <View style={styles.footer}>{children}</View>;
+};
+
+export const DialogClose: React.FC<DialogCloseProps> = ({
+  children,
+  asChild,
+}) => {
+  const { setOpen } = useDialog();
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onPress: () => setOpen(false),
+    } as any);
+  }
+
+  return (
+    <TouchableOpacity
+      style={[styles.button, styles.secondaryButton]}
+      onPress={() => setOpen(false)}
+    >
+      {typeof children === "string" ? (
+        <Text style={styles.secondaryButtonText}>{children}</Text>
+      ) : (
+        children
+      )}
+    </TouchableOpacity>
+  );
+};
+```
+
+#### AnimatedProgress.tsx
+
+```tsx
+import React, { useEffect } from "react";
+import { StyleSheet, View, Dimensions, Text } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+  withRepeat,
+  withSequence,
+} from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
+import type { AnimatedProgressBarProps } from "./AnimatedProgress.types";
+
+export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
+  progress = 0,
+  animationDuration = 800,
+  width = "100%",
+  height = 10,
+  progressColor = "#2089dc",
+  trackColor = "#e0e0e0",
+  borderRadius = 4,
+  showPercentage = false,
+  percentagePosition = "right",
+  percentageTextStyle,
+  containerStyle,
+  formatPercentage = (value: number) => `${Math.round(value * 100)}%`,
+  indeterminate = false,
+  pulsate = false,
+  onAnimationComplete,
+  gradientColors = ["#4dabf7", "#3b5bdb"],
+  useGradient = false,
+}) => {
+  const validProgress = Math.min(Math.max(progress, 0), 1);
+
+  const progressValue = useSharedValue(0);
+  const indeterminateValue = useSharedValue(0);
+  const pulseValue = useSharedValue(1);
+
+  const screenWidth = Dimensions.get("window").width;
+
+  const containerWidth =
+    typeof width === "string"
+      ? width.endsWith("%")
+        ? screenWidth * (parseInt(width, 10) / 100)
+        : parseInt(width, 10)
+      : width;
+
+  useEffect(() => {
+    if (!indeterminate) {
+      progressValue.value = withTiming(
+        validProgress,
+        {
+          duration: animationDuration,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        },
+        (isFinished) => {
+          if (isFinished && onAnimationComplete) {
+            onAnimationComplete();
+          }
+        },
+      );
+    }
+  }, [validProgress, animationDuration, onAnimationComplete, indeterminate]);
+
+  useEffect(() => {
+    if (indeterminate) {
+      indeterminateValue.value = 0;
+      indeterminateValue.value = withRepeat(
+        withTiming(1, { duration: 1500, easing: Easing.linear }),
+        -1,
+        false,
+      );
+    } else {
+      indeterminateValue.value = 0;
+    }
+
+    return () => {
+      indeterminateValue.value = 0;
+    };
+  }, [indeterminate]);
+
+  useEffect(() => {
+    if (pulsate && !indeterminate && validProgress > 0) {
+      pulseValue.value = withRepeat(
+        withSequence(
+          withTiming(1.1, { duration: 500, easing: Easing.ease }),
+          withTiming(1, { duration: 500, easing: Easing.ease }),
+        ),
+        -1,
+        true,
+      );
+    } else {
+      pulseValue.value = 1;
+    }
+
+    return () => {
+      pulseValue.value = 1;
+    };
+  }, [pulsate, indeterminate, validProgress]);
+
+  const progressBarStyle = useAnimatedStyle(() => {
+    if (indeterminate) {
+      return {
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "30%",
+        height: "100%",
+        backgroundColor: useGradient ? "transparent" : progressColor,
+        borderRadius,
+        transform: [
+          {
+            translateX: withRepeat(
+              withTiming(containerWidth * 0.7, {
+                duration: 1500,
+                easing: Easing.linear,
+              }),
+              -1,
+              true,
+            ),
+          },
+        ],
+      };
+    }
+
+    return {
+      width: `${progressValue.value * 100}%`,
+      backgroundColor: useGradient ? "transparent" : progressColor,
+      borderRadius,
+      height: "100%",
+      transform: pulsate ? [{ scale: pulseValue.value }] : [],
+    };
+  });
+
+  const renderPercentageText = () => {
+    if (!showPercentage) return null;
+
+    const textContent = formatPercentage(validProgress);
+    const textElement = (
+      <Text style={[styles.percentageText, percentageTextStyle]}>
+        {textContent}
+      </Text>
+    );
+
+    if (percentagePosition === "inside" && validProgress > 0.1) {
+      return <View style={styles.insideTextContainer}>{textElement}</View>;
+    }
+
+    return textElement;
+  };
+
+  const renderProgressBar = () => {
+    if (useGradient) {
+      return (
+        <Animated.View style={progressBarStyle}>
+          <LinearGradient
+            colors={gradientColors as [string, string, ...string[]]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.gradient}
+          >
+            {percentagePosition === "inside" && renderPercentageText()}
+          </LinearGradient>
+        </Animated.View>
+      );
+    }
+
+    return (
+      <Animated.View style={progressBarStyle}>
+        {percentagePosition === "inside" && renderPercentageText()}
+      </Animated.View>
+    );
+  };
+
+  return (
+    <View
+      style={[
+        styles.container,
+        {
+          flexDirection:
+            percentagePosition === "left" || percentagePosition === "right"
+              ? "row"
+              : "column",
+        },
+        containerStyle,
+      ]}
+    >
+      {percentagePosition === "left" && renderPercentageText()}
+      {percentagePosition === "top" && renderPercentageText()}
+
+      <View
+        style={[
+          styles.track,
+          {
+            width: width,
+            height: height,
+            backgroundColor: trackColor,
+            borderRadius,
+            overflow: "hidden",
+          } as any,
+        ]}
+      >
+        {!indeterminate ? renderProgressBar() : renderProgressBar()}
+      </View>
+
+      {percentagePosition === "right" && renderPercentageText()}
+      {percentagePosition === "bottom" && renderPercentageText()}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  track: {
+    justifyContent: "center",
+    position: "relative",
+  },
+  percentageText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginHorizontal: 8,
+    color: "#000",
+  },
+  insideTextContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  gradient: {
+    flex: 1,
+    borderRadius: 4,
+  },
+});
+```
+
+#### SegmentedControl.tsx
+
+```tsx
+import { SegmentedControlRoot } from "./children/Root";
+import { SegmentedControlItem } from "./children/Item";
+
+export const SegmentedControl = {
+  Root: SegmentedControlRoot,
+  Item: SegmentedControlItem,
+};
+```
+
+### 🧩 Children
+#### Close.tsx
+
+```tsx
+import { Pressable } from "react-native";
+import { useDialog } from "../hooks/useDialog";
+import { ReactNode } from "react";
+
+export const DialogClose = ({
+  children,
+}: {
+  children: ReactNode;
+}): JSX.Element => {
+  const { setOpen } = useDialog();
+  return <Pressable onPress={() => setOpen(false)}>{children}</Pressable>;
+};
+```
+
+#### Content.tsx
+
+```tsx
+import { ReactNode, useContext, useEffect, useState } from "react";
+import { DialogContext } from "../context/DialogContext";
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+import {
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
+import { DialogStyles as styles } from "../styles/styles";
+import { BlurView } from "expo-blur";
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+
+export function DialogContent({
+  children,
+  style,
+}: {
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
+}) {
+  const ctx = useContext(DialogContext);
+  if (!ctx) throw new Error("Dialog.Content must be used within <Dialog>");
+  const { open, setOpen } = ctx;
+
+  const [isMounted, setIsMounted] = useState(open);
+
+  // Shared animation values
+  const animationProgress = useSharedValue(0);
+  const translateY = useSharedValue(10); // Initial position slightly below target
+  const scale = useSharedValue(0.97);
+  const opacity = useSharedValue(0);
+  const blurOpacity = useSharedValue(0);
+
+  // Dialog animation style with more natural transitions
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }, { scale: scale.value }],
+  }));
+
+  // Blur animation style
+  const blurAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: blurOpacity.value,
+  }));
+
+  const springConfig = {
+    damping: 18,
+    mass: 1,
+    stiffness: 150,
+    overshootClamping: false,
+
+    restSpeedThreshold: 2,
+  };
+
+  const timingConfig = {
+    duration: 220,
+    easing: Easing.bezier(0.16, 1, 0.3, 1),
+  };
+
+  useEffect(() => {
+    if (open) {
+      setIsMounted(true);
+
+      blurOpacity.value = withTiming(1, {
+        duration: 250,
+        easing: Easing.out(Easing.ease),
+      });
+
+      opacity.value = withTiming(1, timingConfig);
+      translateY.value = withSpring(0, springConfig);
+      scale.value = withSpring(1, springConfig);
+    } else if (isMounted) {
+      opacity.value = withTiming(0, {
+        duration: 150,
+        easing: Easing.in(Easing.ease),
+      });
+
+      // Subtle exit animation
+      translateY.value = withTiming(8, {
+        duration: 150,
+        easing: Easing.in(Easing.ease),
+      });
+
+      scale.value = withTiming(0.96, {
+        duration: 150,
+        easing: Easing.in(Easing.ease),
+      });
+
+      blurOpacity.value = withTiming(
+        0,
+        {
+          duration: 200,
+          easing: Easing.in(Easing.ease),
+        },
+        () => {
+          runOnJS(setIsMounted)(false);
+        },
+      );
+    }
+  }, [open]);
+
+  if (!isMounted) return null;
+
+  return (
+    <View style={StyleSheet.absoluteFillObject}>
+      <Pressable onPress={() => setOpen(false)} style={styles.backdrop}>
+        <AnimatedBlurView
+          intensity={25}
+          tint="dark"
+          style={[StyleSheet.absoluteFill, blurAnimatedStyle]}
+        />
+      </Pressable>
+      <View style={[styles.centered, style]}>
+        <Animated.View style={[styles.modal, animatedStyle]}>
+          {children}
+        </Animated.View>
+      </View>
+    </View>
+  );
+}
+```
+
+#### Description.tsx
+
+```tsx
+import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { DialogDescriptionProps } from "../Dialog.types";
+
+export const DialogDescription: React.FC<DialogDescriptionProps> = ({
+  children,
+  style,
+}: DialogDescriptionProps): React.ReactNode & React.JSX.Element => {
+  return (
+    <View>
+      <Text style={[styles.description, style]} numberOfLines={2}>
+        {children}
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  description: {
+    fontSize: 16,
+    color: "#babababa",
+    marginBottom: 16,
+    bottom: 2.5,
+  },
+});
+```
+
+#### Title.tsx
+
+```tsx
+import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { DialogTitleProps } from "../Dialog.types";
+
+export const DialogTitle: React.FC<DialogTitleProps> = ({
+  children,
+  style,
+}: DialogTitleProps): React.ReactNode & React.JSX.Element => {
+  return (
+    <View>
+      <Text style={[styles.title, style]} numberOfLines={2}>
+        {children}
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+});
+```
+
+#### Trigger.tsx
+
+```tsx
+import { StyleSheet, Pressable } from "react-native";
+import React from "react";
+import { DialogTriggerProps } from "../Dialog.types";
+import { useDialog } from "../hooks/useDialog";
+
+export const DialogTrigger: React.FC<DialogTriggerProps> = ({
+  children,
+}: DialogTriggerProps): React.ReactNode & React.JSX.Element => {
+  const { setOpen } = useDialog();
+  return <Pressable onPress={() => setOpen(true)}>{children}</Pressable>;
+};
+
+const styles = StyleSheet.create({
+  description: {
+    fontSize: 16,
+    color: "#babababa",
+    marginBottom: 16,
+    bottom: 2.5,
+  },
+});
+```
+
+#### Item.tsx
+
+```tsx
+import { useContext, useEffect } from "react";
+import type { SegmentedControlItemProps } from "../SegmentedControl.types";
+import { SegmentedControlContext } from "../context/SegmentedControlContext";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { Pressable, StyleSheet, Text } from "react-native";
+
+export const SegmentedControlItem: React.FC<SegmentedControlItemProps> = ({
+  value,
+  children,
+  className,
+}: SegmentedControlItemProps) => {
+  const context = useContext(SegmentedControlContext);
+
+  if (!context) {
+    throw new Error(
+      "SegmentedControlItem must be used within a SegmentedControl"
+    );
+  }
+
+  const { selectedValue, onValueChange, itemWidth } = context;
+  const isSelected = selectedValue === value;
+  const scale = useSharedValue(1);
+  useEffect(() => {
+    scale.value = withTiming(isSelected ? 1.1 : 1, {
+      duration: 200,
+    });
+  }, [isSelected]);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+  return (
+    <Pressable
+      onPress={() => onValueChange(value)}
+      style={[
+        {
+          width: itemWidth,
+        },
+        styles.itemContainer,
+      ]}
+    >
+      {typeof children === "string" ? (
+        <Text
+          style={[
+            styles.label,
+            context.theme === "dark" ? styles.darkLabel : styles.lightLabel,
+            isSelected && styles.selectedLabel,
+          ]}
+        >
+          {children}
+        </Text>
+      ) : (
+        <Animated.View style={[animatedStyle]}>{children}</Animated.View>
+      )}
+    </Pressable>
+  );
+};
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    height: 40,
+    borderRadius: 6,
+    padding: 2,
+    position: "relative",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  indicator: {
+    position: "absolute",
+    borderRadius: 4,
+    height: "90%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  itemContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+    height: "100%",
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  darkLabel: {
+    color: "#a1a1aa",
+  },
+  lightLabel: {
+    color: "#71717a",
+  },
+  selectedLabel: {
+    color: "#ffffff",
+    fontWeight: "600",
+  },
+});
+```
+
+#### Root.tsx
+
+```tsx
+import { StyleSheet, useWindowDimensions, View } from "react-native";
+import type { SegmentedControlRootProps } from "../SegmentedControl.types";
+import { Children, isValidElement, useEffect, useState } from "react";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { SegmentedControlContext } from "../context/SegmentedControlContext";
+import { SegmentedControlItem } from "./Item";
+
+export const SegmentedControlRoot = ({
+  defaultValue,
+  value: controlledValue,
+  onValueChange,
+  children,
+  theme = "dark",
+  className,
+}: SegmentedControlRootProps) => {
+  const { width } = useWindowDimensions();
+  const internalPadding = 4;
+  const segmentedControlWidth = width - 40;
+
+  const items = Children.toArray(children).filter(
+    (child) => isValidElement(child) && child.type === SegmentedControlItem,
+  );
+
+  const itemWidth = (segmentedControlWidth - internalPadding) / items.length;
+
+  const [selectedValue, setSelectedValue] = useState(
+    controlledValue || defaultValue || (items[0] as any)?.props?.value || "",
+  );
+
+  useEffect(() => {
+    if (controlledValue !== undefined) {
+      setSelectedValue(controlledValue);
+    }
+  }, [controlledValue]);
+
+  const handleValueChange = (value: string) => {
+    if (controlledValue === undefined) {
+      setSelectedValue(value);
+    }
+    onValueChange?.(value);
+  };
+
+  const selectedIndex = items.findIndex(
+    (child) => isValidElement(child) && child.props.value === selectedValue,
+  );
+
+  const translateX = useSharedValue(
+    selectedIndex >= 0 ? selectedIndex * itemWidth + internalPadding / 2 : 0,
+  );
+
+  useEffect(() => {
+    if (selectedIndex >= 0) {
+      translateX.value = withTiming(
+        selectedIndex * itemWidth + internalPadding / 2,
+        { duration: 350 },
+      );
+    }
+  }, [selectedIndex, itemWidth, translateX]);
+
+  const indicatorStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    };
+  });
+
+  const backgroundColor = theme === "dark" ? "#09090b" : "#f8f9fa";
+  const indicatorColor = theme === "dark" ? "#27272a" : "#e4e4e7";
+
+  return (
+    <SegmentedControlContext.Provider
+      value={{
+        selectedValue,
+        onValueChange: handleValueChange,
+        itemWidth,
+        theme,
+      }}
+    >
+      <View
+        style={[
+          styles.container,
+          {
+            width: segmentedControlWidth,
+            backgroundColor,
+          },
+        ]}
+      >
+        <Animated.View
+          style={[
+            {
+              width: itemWidth - 4,
+            },
+            styles.indicator,
+            indicatorStyle,
+            { backgroundColor: indicatorColor },
+          ]}
+        />
+        {children}
+      </View>
+    </SegmentedControlContext.Provider>
+  );
+};
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    height: 40,
+    borderRadius: 10,
+    padding: 2,
+    position: "relative",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  indicator: {
+    position: "absolute",
+    borderRadius: 10,
+    height: "90%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  itemContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+    height: "100%",
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  darkLabel: {
+    color: "#a1a1aa",
+  },
+  lightLabel: {
+    color: "#71717a",
+  },
+  selectedLabel: {
+    color: "#ffffff",
+    fontWeight: "600",
+  },
+});
+```
+
+### 📁 Other
+#### DialogContext.ts
+
+```ts
+import { createContext } from "react";
+import { DialogContextType } from "../Dialog.types";
+
+export const DialogContext = createContext<DialogContextType | null>(null);
+```
+
+#### useDialog.ts
+
+```ts
+import { useContext } from "react";
+import { DialogContextType } from "../Dialog.types";
+import { DialogContext } from "../context/DialogContext";
+
+export const useDialog = (): DialogContextType => {
+  const ctx = useContext(DialogContext);
+  if (!ctx) throw new Error("Dialog components must be used within <Dialog>");
+  return ctx;
+};
+```
+
+#### index.ts
+
+```ts
+export * from "./Dialog";
+```
+
+#### styles.ts
+
+```ts
+import { StyleSheet } from "react-native";
+
+export const DialogStyles = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
+  },
+  centered: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 2,
+  },
+  modal: {
+    width: "85%",
+    backgroundColor: "#000",
+    borderRadius: 16,
+    padding: 24,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+
+    shadowOffset: { width: 0, height: 4 },
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 8,
+    color: "#fff",
+  },
+  description: {
+    fontSize: 16,
+    color: "#444",
+    marginBottom: 16,
+  },
+});
+```
+
+#### index.ts
+
+```ts
+export * from "./dialog/index";
+export * from "./segmented-control/index";
+export * from "./progress/AnimatedProgress";
+export * from "./check-box/CheckBox";
+```
+
+#### SegmentedControlContext.ts
+
+```ts
+import { createContext } from "react";
+
+export const SegmentedControlContext = createContext<any>(null);
+```
+
+#### index.ts
+
+```ts
+export * from "./SegmentedControl";
+export * from "./children/Root";
+export * from "./children/Item";
+```

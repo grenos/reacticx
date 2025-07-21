@@ -11,7 +11,12 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <Banner changeLayout={true} variant="rainbow" height="40px">
+        <Banner
+          id="glow-ui_banner"
+          changeLayout={true}
+          variant="rainbow"
+          height="40px"
+        >
           React Native Glow UI v1 is out now!
         </Banner>
         <RootProvider>{children}</RootProvider>

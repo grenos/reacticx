@@ -3,6 +3,7 @@ import React from "react";
 import { Stack } from "expo-router";
 import { Appearance, ScrollView } from "react-native";
 import { ThemeProvider, DarkTheme } from "@react-navigation/native";
+import "../global.css";
 
 Appearance.setColorScheme("dark");
 export default function RootLayout() {

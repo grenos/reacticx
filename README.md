@@ -15,7 +15,7 @@
 
 <div align="center">
   <p>
-    <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version" />
+    <img src="https://img.shields.io/npm/v/rn-glow.svg" alt="Version" />
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
     <img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="Build Status" />
     <img src="https://img.shields.io/badge/PRs-welcome-purple.svg" alt="PRs Welcome" />
@@ -42,7 +42,7 @@
 
 ## 📚 Documentation
 
-Visit our [documentation](https://glow-ui.vercel.app/) to learn more about our components and how to use them.
+Visit our [documentation](https://glow-ui.xyz/) to learn more about our components and how to use them.
 
 ## 🤝 Contributing
 
@@ -50,7 +50,7 @@ We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING
 
 ## 📝 License
 
-MIT © [Glow UI](https://glow-ui.vercel.app/)
+MIT © [Glow UI](https://glow-ui.xyz/)
 
 ---
 

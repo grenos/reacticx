@@ -17,6 +17,7 @@ import { COMPONENTS } from "./constants/const";
 
 export default function Home<T>() {
   const router = useRouter();
+
   return (
     <React.Fragment>
       <Stack.Screen
@@ -24,6 +25,7 @@ export default function Home<T>() {
           title: "Glow UI",
         }}
       />
+
       <RootView>
         <List listStyle={"automatic"}>
           {COMPONENTS.map((component, index) => {

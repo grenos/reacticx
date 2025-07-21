@@ -1,0 +1,227 @@
+---
+title: Breadcrumbs
+description: Breadcrumbs component for React Native.
+---
+
+### 📦 Installation
+
+
+```bash
+npx rn-glow add Breadcrumbs
+```
+
+### ⚙️ Types
+#### Breadcrumbs.types.ts
+
+```ts
+import type { ReactNode } from "react";
+
+export type BreadcrumbItemProps = {
+  children: ReactNode;
+  onPress?: () => void;
+  isCurrent?: boolean;
+  tint?: string;
+  currentTint?: string;
+  className?: string;
+};
+
+export type BreadcrumbsListProps = {
+  children: ReactNode;
+};
+
+export type BreadcrumbsSeparatorProps = {
+  children?: ReactNode;
+};
+
+export type BreadcrumbsProps = {
+  children: ReactNode;
+  style?: any;
+};
+```
+
+### 💻 Components
+#### BreadcrumbsList.tsx
+
+```tsx
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import type { BreadcrumbsListProps } from "./Breadcrumbs.types";
+
+export const BreadcrumbsList: React.FC<BreadcrumbsListProps> = ({
+  children,
+}) => {
+  return <View style={styles.list}>{children}</View>;
+};
+
+const styles = StyleSheet.create({
+  list: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+});
+```
+
+### 🧩 Children
+#### Breadcrumbs.tsx
+
+```tsx
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import type { BreadcrumbsProps } from "../Breadcrumbs.types";
+
+export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
+  children,
+  style,
+}) => {
+  return <View style={[styles.container, style]}>{children}</View>;
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+});
+```
+
+#### BreadcrumbsIcon.tsx
+
+```tsx
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import type { BreadcrumbsProps } from "../Breadcrumbs.types";
+
+export const BreadcrumbsIcon: React.FC<BreadcrumbsProps> = ({
+  children,
+  style,
+}) => {
+  return <View style={[styles.container, style]}>{children}</View>;
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginRight: 4,
+  },
+});
+```
+
+#### BreadcrumbsItem.tsx
+
+```tsx
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import type { BreadcrumbItemProps } from "../Breadcrumbs.types";
+
+export const BreadcrumbsItem: React.FC<BreadcrumbItemProps> = ({
+  children,
+  onPress,
+  isCurrent,
+  tint = "#888",
+  currentTint = "#000",
+  className,
+}) => {
+  const content = (
+    <Text
+      className={`${className}`}
+      style={[
+        isCurrent
+          ? { color: currentTint, fontWeight: "500" }
+          : {
+              color: tint,
+            },
+      ]}
+    >
+      {children}
+    </Text>
+  );
+
+  return onPress && !isCurrent ? (
+    <TouchableOpacity onPress={onPress}>{content}</TouchableOpacity>
+  ) : (
+    content
+  );
+};
+
+const styles = StyleSheet.create({
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    marginRight: 4,
+  },
+  link: {
+    color: "#007AFF",
+  },
+  current: {
+    fontWeight: "600",
+    color: "#000",
+  },
+});
+```
+
+#### BreadcrumbsSeparator.tsx
+
+```tsx
+import React from "react";
+import { Text, StyleSheet, View } from "react-native";
+import type { BreadcrumbsSeparatorProps } from "../Breadcrumbs.types";
+
+export const BreadcrumbsSeparator: React.FC<BreadcrumbsSeparatorProps> = ({
+  children = "/",
+}) => {
+  return (
+    <View style={styles.separator}>
+      {children ? children : <Text style={{ color: "#888" }}>{children}</Text>}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  separator: {
+    marginHorizontal: 4,
+    color: "#888",
+  },
+});
+```
+
+#### BreadcrumbsView.tsx
+
+```tsx
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import type { BreadcrumbsSeparatorProps } from "../Breadcrumbs.types";
+
+/**
+ *
+ * @deprecated
+ */
+export const BreadcrumbsView: React.FC<BreadcrumbsSeparatorProps> = ({
+  children,
+}) => {
+  return <View style={styles.item}>{children}</View>;
+};
+
+const styles = StyleSheet.create({
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+});
+```
+
+### 📁 Other
+#### index.ts
+
+```ts
+export { BreadcrumbsItem } from "./children/BreadcrumbsItem";
+export { BreadcrumbsSeparator } from "./children/BreadcrumbsSeparator";
+export { Breadcrumbs } from "./children/Breadcrumbs";
+export { BreadcrumbsIcon } from "./children/BreadcrumbsIcon";
+export { BreadcrumbsView } from "./children/BreadcrumbsView";
+
+export { BreadcrumbsList } from "./BreadcrumbsList";
+export * from "./BreadcrumbsList";
+```
