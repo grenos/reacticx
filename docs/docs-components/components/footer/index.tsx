@@ -17,7 +17,7 @@ export function Footer() {
           .
           <span className="text-muted-foreground block text-center text-sm">
             {" "}
-            © {new Date().getFullYear()} Reacticx, All rights reserved
+            © 2026 Reacticx, All rights reserved
           </span>
         </p>
       </footer>
