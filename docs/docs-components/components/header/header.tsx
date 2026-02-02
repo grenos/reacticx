@@ -88,12 +88,12 @@ const AboutIcon = ({ className }: { className?: string }) => (
 export const navLinks = [
   {
     label: "Components",
-    href: "#components",
+    href: "/docs",
     icon: ComponentsIcon,
   },
   {
     label: "About",
-    href: "#about",
+    href: "/docs/about",
     icon: AboutIcon,
   },
 ];

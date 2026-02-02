@@ -1,15 +1,14 @@
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { MenuIcon, XIcon } from "lucide-react";
 import React from "react";
 import { navLinks, socialLinks } from "./header";
 import { buttonVariants } from "../button";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
-  const { isMobile } = useMediaQuery();
 
   // Check if component is mounted (client-side only)
   React.useEffect(() => {
@@ -18,7 +17,7 @@ export function MobileNav() {
 
   // 🚫 Disable body scroll when open
   React.useEffect(() => {
-    if (open && isMobile) {
+    if (open) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -27,11 +26,16 @@ export function MobileNav() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open, isMobile]);
+  }, [open]);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <>
-      <span
+      <button
+        type="button"
         aria-controls="mobile-menu"
         aria-expanded={open}
         aria-label="Toggle menu"
@@ -39,7 +43,7 @@ export function MobileNav() {
         onClick={() => setOpen(!open)}
       >
         {open ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}
-      </span>
+      </button>
 
       {mounted &&
         open &&
@@ -61,18 +65,18 @@ export function MobileNav() {
               {/* Navigation Links */}
               <div className="grid gap-y-1">
                 {navLinks.map((link) => (
-                  <a
+                  <Link
                     className={buttonVariants({
                       variant: "ghost",
                       className: "justify-start gap-3 h-12 text-base",
                     })}
                     href={link.href}
                     key={link.label}
-                    onClick={() => setOpen(false)}
+                    onClick={handleClose}
                   >
                     <link.icon className="h-5 w-5 opacity-70" />
                     {link.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
 
@@ -94,7 +98,7 @@ export function MobileNav() {
                     key={link.label}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => setOpen(false)}
+                    onClick={handleClose}
                   >
                     <link.icon className="h-5 w-5 opacity-70" />
                     {link.label}
