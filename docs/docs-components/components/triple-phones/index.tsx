@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useId } from "react";
 import { motion, useInView } from "motion/react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -19,8 +19,10 @@ const Iphone15Pro: React.FC<Iphone15ProProps> = ({
   className,
   ...props
 }) => {
+  const clipId = useId();
+
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative overflow-hidden", className)}>
       <svg
         width={width}
         height={height}
@@ -29,6 +31,7 @@ const Iphone15Pro: React.FC<Iphone15ProProps> = ({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="transition-all duration-500 ease-in-out"
+        style={{ overflow: "hidden" }}
         {...props}
       >
         {/* Outer frame */}
@@ -80,7 +83,8 @@ const Iphone15Pro: React.FC<Iphone15ProProps> = ({
             y="19.25"
             width="389.5"
             height="843.5"
-            clipPath="url(#roundedCorners)"
+            clipPath={`url(#${clipId})`}
+            style={{ overflow: "hidden" }}
           >
             <div
               style={{
@@ -96,8 +100,8 @@ const Iphone15Pro: React.FC<Iphone15ProProps> = ({
                 src={src}
                 alt={alt}
                 fill
-                style={{ objectFit: "cover" }}
-                sizes="(max-width: 768px) 80vw, (max-width: 1200px) 50vw, 33vw"
+                style={{ objectFit: "cover", objectPosition: "center top" }}
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                 priority
               />
             </div>
@@ -105,7 +109,7 @@ const Iphone15Pro: React.FC<Iphone15ProProps> = ({
         )}
 
         <defs>
-          <clipPath id="roundedCorners">
+          <clipPath id={clipId}>
             <rect
               x="21.25"
               y="19.25"

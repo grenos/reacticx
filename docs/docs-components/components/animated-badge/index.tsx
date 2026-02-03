@@ -46,7 +46,7 @@ const AnimatedBadge = ({
         ease: "easeInOut",
       }}
       viewport={{ once: true }}
-      className="group relative flex max-w-fit items-center justify-center gap-3 rounded-full border border-neutral-300 bg-white px-4 py-1.5 text-neutral-700 transition-colors dark:border-neutral-700/80 dark:bg-black dark:text-zinc-300"
+      className="group relative flex max-w-fit items-center justify-center gap-3 rounded-full border border-white/20 bg-black px-4 py-1.5 text-zinc-300 transition-colors"
     >
       <div className="pointer-events-none absolute inset-x-0 bottom-full h-20 w-[165px]">
         <svg
@@ -102,9 +102,9 @@ const AnimatedBadge = ({
           style={{ backgroundColor: hexToRgba(color, 0.8) }}
         ></div>
       </div>
-      <div className="mx-2 h-4 w-px bg-neutral-300 dark:bg-neutral-600/80" />
+      <div className="mx-2 h-4 w-px bg-neutral-600/80" />
       <span className="bg-clip-text text-xs font-medium">{text}</span>
-      <ChevronRight className="ml-1 h-3.5 w-3.5 text-neutral-400 transition-transform duration-200 group-hover:translate-x-0.5 dark:text-neutral-500" />
+      <ChevronRight className="ml-1 h-3.5 w-3.5 text-neutral-500 transition-transform duration-200 group-hover:translate-x-0.5" />
     </motion.div>
   );
   return (
