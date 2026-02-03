@@ -15,7 +15,6 @@ import { Preview } from "@/components/mdx/preview";
 import { PreviewClient } from "@/components/mdx/preview-client";
 import { PreviewComment } from "@/components/mdx/preview-comment";
 import PreviewTemplate from "@/components/mdx/preview-template";
-import WhatIncluded from "@/components/mdx/what-included";
 import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 import { ComponentSource } from "@/docs-components/components/components-source";
 import { ExampleComponentSource } from "@/docs-components/components/example-usage-source";
@@ -65,7 +64,6 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
             PreviewClient,
             PreviewComment,
             PreviewTemplate,
-            WhatIncluded,
             ComponentSource,
             img: (props) => <ImageZoom {...(props as any)} />,
             ExampleComponentSource,

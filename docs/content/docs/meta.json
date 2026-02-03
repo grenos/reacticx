@@ -11,7 +11,6 @@
     "components/energy-orb",
     "components/siri-orb",
     "components/skia-ripple",
-    "components/liquid-metal",
     "components/wave-scrawler",
 
     "---Texts---",
@@ -111,13 +110,10 @@
     "components/stepper",
     "components/switch",
     "components/tabs",
-    "components/team-selector",
     "components/theme-switch",
     "components/tilt-carousel",
     "components/title",
     "components/toast",
-    "components/toolbar",
-    "components/tweet-card",
     "components/vertical-flow-carousel",
     "components/vertical-page-carousel"
   ]
