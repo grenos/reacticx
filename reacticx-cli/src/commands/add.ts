@@ -63,13 +63,33 @@ export async function add<T extends string>(
       ? path.join(process.cwd(), outDir)
       : path.join(process.cwd(), outDir, component.category, componentName);
 
-    if ((await fs.pathExists(componentDir)) && !options.overwrite) {
-      spinner.warn(
-        chalk.yellow(
-          `${componentName} already exists. Use --overwrite to replace.`,
-        ),
-      );
-      process.exit(1);
+    // Check if any of the component's files already exist (not just the directory)
+    if (!options.overwrite) {
+      const existingFiles: string[] = [];
+      for (const fileName of component.files) {
+        const filePath = path.join(componentDir, fileName);
+        if (await fs.pathExists(filePath)) {
+          existingFiles.push(fileName);
+        }
+      }
+      if (component.folders) {
+        for (const folder of component.folders) {
+          for (const fileName of folder.files) {
+            const filePath = path.join(componentDir, folder.name, fileName);
+            if (await fs.pathExists(filePath)) {
+              existingFiles.push(`${folder.name}/${fileName}`);
+            }
+          }
+        }
+      }
+      if (existingFiles.length > 0) {
+        spinner.warn(
+          chalk.yellow(
+            `${componentName} already exists. Use --overwrite to replace.`,
+          ),
+        );
+        process.exit(1);
+      }
     }
 
     await fs.ensureDir(componentDir);
