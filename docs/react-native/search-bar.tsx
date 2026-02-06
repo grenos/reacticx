@@ -389,7 +389,8 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   clearButton: {
-    padding: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 4,
     marginLeft: 4,
   },
   cancelButtonContainer: {

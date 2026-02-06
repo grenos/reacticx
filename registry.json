@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "totalComponents": 106,
+  "totalComponents": 107,
   "categories": [
     "ai",
     "atoms",
@@ -113,6 +113,19 @@
       "folders": [],
       "files": [
         "const.ts",
+        "index.tsx",
+        "types.ts"
+      ]
+    },
+    "aurora": {
+      "name": "aurora",
+      "category": "molecules",
+      "path": "src/components/molecules/aurora",
+      "folders": [],
+      "files": [
+        "conf.ts",
+        "const.ts",
+        "helper.ts",
         "index.tsx",
         "types.ts"
       ]
